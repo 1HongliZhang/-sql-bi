@@ -12,6 +12,7 @@ pip install -r requirements.txt
 - `machine_id`: 机器唯一编号
 - `share_dir`: 共享文件夹绝对路径
 - `port`: 服务端口（默认5000）
+- `token`: 认证Token（必填，用于安全访问）
 
 ### 3. 启动服务
 ```bash
@@ -19,6 +20,8 @@ python server.py
 ```
 
 ## API接口
+
+所有接口都需要在URL后添加 `?token=配置中的token` 进行认证。
 
 | 接口 | 方法 | 说明 |
 |------|------|------|
@@ -30,7 +33,7 @@ python server.py
 
 ### 查看机器状态
 ```bash
-curl http://127.0.0.1:5000/info
+curl http://127.0.0.1:5000/info?token=yoursecret123
 ```
 返回:
 ```json
@@ -42,7 +45,7 @@ curl http://127.0.0.1:5000/info
 
 ### 查看文件列表
 ```bash
-curl http://127.0.0.1:5000/files
+curl http://127.0.0.1:5000/files?token=yoursecret123
 ```
 返回:
 ```json
@@ -56,4 +59,4 @@ curl http://127.0.0.1:5000/files
 ```
 
 ### 下载文件
-在浏览器访问: `http://127.0.0.1:5000/download/test.txt`
+在浏览器访问: `http://127.0.0.1:5000/download/test.txt?token=yoursecret123`

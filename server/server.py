@@ -2,7 +2,7 @@ import os
 import json
 from pathlib import Path
 from datetime import datetime
-from flask import Flask, jsonify, send_from_directory, safe_join, abort
+from flask import Flask, jsonify, send_from_directory, safe_join, abort, request
 
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ def load_config():
         config = json.load(f)
     
     # 验证必需字段
-    required_fields = ["machine_id", "share_dir"]
+    required_fields = ["machine_id", "share_dir", "token"]
     for field in required_fields:
         if field not in config:
             raise ValueError(f"配置缺少必需字段: {field}")
@@ -54,6 +54,21 @@ try:
 except Exception as e:
     print(f"验证共享目录失败: {e}")
     exit(1)
+
+
+def check_token():
+    """Token认证检查，返回True表示认证通过，False表示失败"""
+    token = request.args.get("token")
+    if token != config["token"]:
+        return False
+    return True
+
+
+@app.before_request
+def before_request():
+    """在每个请求前执行，检查Token认证"""
+    if not check_token():
+        return jsonify({"error": "未授权，需要有效的Token"}), 403
 
 
 @app.route("/info", methods=["GET"])
@@ -135,9 +150,9 @@ def main():
     print(f"本机访问: http://127.0.0.1:{port}")
     print("=" * 50)
     print("接口说明:")
-    print(f"  - GET /info    -> 查看机器状态")
-    print(f"  - GET /files   -> 查看文件列表")
-    print(f"  - GET /download/文件名 -> 下载文件")
+    print(f"  - GET /info?token=xxx    -> 查看机器状态")
+    print(f"  - GET /files?token=xxx   -> 查看文件列表")
+    print(f"  - GET /download/文件名?token=xxx -> 下载文件")
     print("=" * 50)
     
     # 启动Flask服务
