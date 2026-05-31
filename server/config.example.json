@@ -1,0 +1,6 @@
+{
+  "machine_id": "机房-A-01",
+  "share_dir": "SharedFiles",
+  "port": 5000,
+  "token": "yoursecret123"
+}

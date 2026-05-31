@@ -10,7 +10,7 @@ pip install -r requirements.txt
 ### 2. 修改配置
 编辑 `config.json`，修改以下字段：
 - `machine_id`: 机器唯一编号
-- `share_dir`: 共享文件夹绝对路径
+- `share_dir`: 共享文件夹路径，可以是绝对路径（如 `D:/SharedFiles`）或相对于exe的相对路径（如 `SharedFiles`）
 - `port`: 服务端口（默认5000）
 - `token`: 认证Token（必填，用于安全访问）
 

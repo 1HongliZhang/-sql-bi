@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from pathlib import Path
 from datetime import datetime
@@ -7,9 +8,20 @@ from flask import Flask, jsonify, send_from_directory, safe_join, abort, request
 app = Flask(__name__)
 
 
+def get_base_path():
+    """获取应用的基础路径，适配开发环境和打包后的环境"""
+    if getattr(sys, 'frozen', False):
+        # 打包后的环境（exe）
+        return Path(sys.executable).parent
+    else:
+        # 开发环境（脚本运行）
+        return Path(__file__).parent
+
+
 def load_config():
     """从同目录下的config.json读取配置"""
-    config_path = Path(__file__).parent / "config.json"
+    base_path = get_base_path()
+    config_path = base_path / "config.json"
     
     if not config_path.exists():
         raise FileNotFoundError(f"配置文件不存在: {config_path}")
@@ -38,8 +50,16 @@ except Exception as e:
 
 
 def validate_share_dir():
-    """验证共享目录是否存在，不存在则创建"""
-    share_dir = Path(config["share_dir"])
+    """验证共享目录是否存在，不存在则创建。支持绝对路径和相对于exe的相对路径"""
+    base_path = get_base_path()
+    share_dir_config = config["share_dir"]
+    
+    # 判断是绝对路径还是相对路径
+    if Path(share_dir_config).is_absolute():
+        share_dir = Path(share_dir_config)
+    else:
+        share_dir = base_path / share_dir_config
+    
     if not share_dir.exists():
         share_dir.mkdir(parents=True, exist_ok=True)
         print(f"共享目录不存在，已创建: {share_dir}")
