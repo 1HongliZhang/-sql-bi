@@ -1,6 +1,7 @@
 name: Build Windows EXE
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -37,7 +38,6 @@ jobs:
       - name: Prepare release
         working-directory: server
         run: |
-          # 复制配置文件到输出目录
           copy config.json dist\server\
           copy config.example.json dist\server\
           copy install_startup.bat dist\server\
